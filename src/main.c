@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <unistd.h>
 #include "gpio.h"
 
 int main() {
@@ -8,5 +9,12 @@ int main() {
     gpio_direction_output(7);
 
     for (;;) {
+        printf("Setting\n");
+        gpio_set(7);
+        sleep(2);
+
+        printf("Clearing\n");
+        gpio_clear(7);
+        sleep(2);
     }
 }

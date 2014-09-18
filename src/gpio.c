@@ -1,14 +1,12 @@
-#include "gpio.h"
-
-#define BCM2708_PERI_BASE        0x20000000
-#define GPIO_BASE                (BCM2708_PERI_BASE + 0x200000) /* GPIO controller */
-
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <unistd.h>
+#include "gpio.h"
+
+#define BCM2708_PERI_BASE        0x20000000
+#define GPIO_BASE                (BCM2708_PERI_BASE + 0x200000) /* GPIO controller */
 
 #define PAGE_SIZE (4*1024)
 #define BLOCK_SIZE (4*1024)
@@ -30,22 +28,22 @@ volatile unsigned *gpio;
 #define GET_GPIO(g) (*(gpio+13)&(1<<g)) // 0 if LOW, (1<<g) if HIGH
 
 // Set up a memory regions to access GPIO
-void gpio_setup_io()
-{
+void gpio_setup_io() {
    /* open /dev/mem */
    if ((mem_fd = open("/dev/mem", O_RDWR|O_SYNC) ) < 0) {
-      printf("can't open /dev/mem \n");
+      printf("Can't open /dev/mem. ");
+      printf("May need to run with sudo.\n");
       exit(-1);
    }
 
    /* mmap GPIO */
    gpio_map = mmap(
-      NULL,                 //Any address in our space will do
-      BLOCK_SIZE,           //Map length
+      NULL,                 // Any address in our space will do
+      BLOCK_SIZE,           // Map length
       PROT_READ|PROT_WRITE, // Enable reading & writting to mapped memory
-      MAP_SHARED,           //Shared with other processes
-      mem_fd,               //File to map
-      GPIO_BASE             //Offset to GPIO peripheral
+      MAP_SHARED,           // Shared with other processes
+      mem_fd,               // File to map
+      GPIO_BASE             // Offset to GPIO peripheral
    );
 
    close(mem_fd);           //No need to keep mem_fd open after mmap
@@ -60,7 +58,7 @@ void gpio_setup_io()
 }
 
 void gpio_direction_output(uint8_t pin) {
-    // @note Must set pin as input before output
+    /// @note Must set pin as input before output
     INP_GPIO(pin);
     OUT_GPIO(pin);
 }
@@ -69,7 +67,7 @@ void gpio_direction_input(uint8_t pin) {
     INP_GPIO(pin);
 }
 
-// @todo Is this really setting the pin mask?
+/// @todo Is this really setting a single pin or a pin mask?
 void gpio_set(uint8_t pin) {
     GPIO_SET = 1 << pin;
 }
