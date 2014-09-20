@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include "gpio.h"
+#include "stepper.h"
 
 int main() {
     printf("Starting LittleCrane\n");
@@ -9,13 +10,14 @@ int main() {
     gpio_direction_output(7);
     gpio_direction_output(8);
 
-    gpio_clear(8);
+    stepper_init();
 
     for (;;) {
-        gpio_set(7);
-        usleep(400);
-
-        gpio_clear(7);
-        usleep(400);
+        stepper_set_position(200);
+        sleep(2);
+        stepper_set_position(0);
+        sleep(2);
+        stepper_set_position(-200);
+        sleep(2);
     }
 }
